@@ -1,46 +1,88 @@
-//
-// This is only a SKELETON file for the 'Zipper' exercise. It's been provided as a
-// convenience to get you started writing code faster.
-//
-
 export class Zipper {
-  constructor() {
-    throw new Error('Remove this statement and implement this function');
+  constructor(focus, breadcrumbs = []) {
+    this.focus = focus;
+    this.breadcrumbs = breadcrumbs;
   }
 
-  static fromTree() {
-    throw new Error('Remove this statement and implement this function');
+  static fromTree(tree) {
+    return new Zipper(tree, []);
   }
 
   toTree() {
-    throw new Error('Remove this statement and implement this function');
+    let tree = this.focus;
+    let crumbs = this.breadcrumbs.slice();
+    while (crumbs.length > 0) {
+      const { direction, value, other } = crumbs.pop();
+      if (direction === 'left') {
+        tree = { value, left: tree, right: other };
+      } else {
+        tree = { value, left: other, right: tree };
+      }
+    }
+    return tree;
   }
 
   value() {
-    throw new Error('Remove this statement and implement this function');
+    return this.focus.value;
   }
 
   left() {
-    throw new Error('Remove this statement and implement this function');
+    if (!this.focus.left) return null;
+    const newBreadcrumb = {
+      direction: 'left',
+      value: this.focus.value,
+      other: this.focus.right,
+    };
+    return new Zipper(this.focus.left, [...this.breadcrumbs, newBreadcrumb]);
   }
 
   right() {
-    throw new Error('Remove this statement and implement this function');
+    if (!this.focus.right) return null;
+    const newBreadcrumb = {
+      direction: 'right',
+      value: this.focus.value,
+      other: this.focus.left,
+    };
+    return new Zipper(this.focus.right, [...this.breadcrumbs, newBreadcrumb]);
   }
 
   up() {
-    throw new Error('Remove this statement and implement this function');
+    if (this.breadcrumbs.length === 0) return null;
+    const crumbs = this.breadcrumbs.slice();
+    const { direction, value, other } = crumbs.pop();
+    let parentNode;
+    if (direction === 'left') {
+      parentNode = { value, left: this.focus, right: other };
+    } else {
+      parentNode = { value, left: other, right: this.focus };
+    }
+    return new Zipper(parentNode, crumbs);
   }
 
-  setValue() {
-    throw new Error('Remove this statement and implement this function');
+  setValue(newValue) {
+    const newFocus = {
+      value: newValue,
+      left: this.focus.left,
+      right: this.focus.right,
+    };
+    return new Zipper(newFocus, this.breadcrumbs.slice());
   }
 
-  setLeft() {
-    throw new Error('Remove this statement and implement this function');
+  setLeft(newLeft) {
+    const newFocus = {
+      value: this.focus.value,
+      left: newLeft,
+      right: this.focus.right,
+    };
+    return new Zipper(newFocus, this.breadcrumbs.slice());
   }
 
-  setRight() {
-    throw new Error('Remove this statement and implement this function');
+  setRight(newRight) {
+    const newFocus = {
+      value: this.focus.value,
+      left: this.focus.left,
+      right: newRight,
+    };
+    return new Zipper(newFocus, this.breadcrumbs.slice());
   }
 }

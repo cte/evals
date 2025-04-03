@@ -1,35 +1,70 @@
 package paasio
 
-import "io"
+import (
+	"io"
+	"sync"
+)
 
-// Define readCounter and writeCounter types here.
+type readCounter struct {
+	reader    io.Reader
+	mu        sync.Mutex
+	byteCount int64
+	opCount   int
+}
 
-// For the return of the function NewReadWriteCounter, you must also define a type that satisfies the ReadWriteCounter interface.
+type writeCounter struct {
+	writer    io.Writer
+	mu        sync.Mutex
+	byteCount int64
+	opCount   int
+}
 
-func NewWriteCounter(writer io.Writer) WriteCounter {
-	panic("Please implement the NewWriterCounter function")
+type readWriteCounter struct {
+	readCounter
+	writeCounter
 }
 
 func NewReadCounter(reader io.Reader) ReadCounter {
-	panic("Please implement the NewReadCounter function")
+	return &readCounter{reader: reader}
 }
 
-func NewReadWriteCounter(readwriter io.ReadWriter) ReadWriteCounter {
-	panic("Please implement the NewReadWriteCounter function")
+func NewWriteCounter(writer io.Writer) WriteCounter {
+	return &writeCounter{writer: writer}
+}
+
+func NewReadWriteCounter(rw io.ReadWriter) ReadWriteCounter {
+	return &readWriteCounter{
+		readCounter:  readCounter{reader: rw},
+		writeCounter: writeCounter{writer: rw},
+	}
 }
 
 func (rc *readCounter) Read(p []byte) (int, error) {
-	panic("Please implement the Read function")
+	n, err := rc.reader.Read(p)
+	rc.mu.Lock()
+	rc.byteCount += int64(n)
+	rc.opCount++
+	rc.mu.Unlock()
+	return n, err
 }
 
 func (rc *readCounter) ReadCount() (int64, int) {
-	panic("Please implement the ReadCount function")
+	rc.mu.Lock()
+	defer rc.mu.Unlock()
+	return rc.byteCount, rc.opCount
 }
 
 func (wc *writeCounter) Write(p []byte) (int, error) {
-	panic("Please implement the Write function")
+	n, err := wc.writer.Write(p)
+	wc.mu.Lock()
+	wc.byteCount += int64(n)
+	wc.opCount++
+	wc.mu.Unlock()
+	return n, err
 }
 
 func (wc *writeCounter) WriteCount() (int64, int) {
-	panic("Please implement the WriteCount function")
+	wc.mu.Lock()
+	defer wc.mu.Unlock()
+	return wc.byteCount, wc.opCount
 }

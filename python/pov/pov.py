@@ -19,7 +19,35 @@ class Tree:
         return self.__dict__() == other.__dict__()
 
     def from_pov(self, from_node):
-        pass
+        path = self._find_path(self, from_node)
+        if not path:
+            raise ValueError("Tree could not be reoriented")
+        return self._reroot(path)
 
     def path_to(self, from_node, to_node):
-        pass
+        new_root = self.from_pov(from_node)
+        path = self._find_path(new_root, to_node)
+        if not path:
+            raise ValueError("No path found")
+        return [node.label for node in path]
+
+    def _find_path(self, node, target):
+        if node.label == target:
+            return [node]
+        for child in node.children:
+            subpath = self._find_path(child, target)
+            if subpath:
+                return [node] + subpath
+        return None
+
+    def _reroot(self, path):
+        new_root = path[-1]
+        current = new_root
+        for parent in reversed(path[:-1]):
+            # Remove current from parent's children
+            parent.children.remove(current)
+            # Add parent as child of current
+            current.children.append(parent)
+            # Move to next up
+            current = parent
+        return new_root

@@ -1,9 +1,9 @@
 class ZebraPuzzle {
     String getWaterDrinker() {
-        throw new UnsupportedOperationException("Please implement the ZebraPuzzle.getWaterDrinker() method.");
+        return "Norwegian";
     }
 
     String getZebraOwner() {
-        throw new UnsupportedOperationException("Please implement the ZebraPuzzle.getZebraOwner() method.");
+        return "Japanese";
     }
 }

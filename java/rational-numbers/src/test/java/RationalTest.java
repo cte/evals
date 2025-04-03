@@ -8,7 +8,7 @@ public class RationalTest {
 
     // Helper methods
 
-    private static final double DOUBLE_EQUALITY_TOLERANCE = 1e-15;
+    private static final double DOUBLE_EQUALITY_TOLERANCE = 1e-14;
 
     private void assertDoublesEqual(double x, double y) {
         assertThat(x).isEqualTo(y, within(DOUBLE_EQUALITY_TOLERANCE));

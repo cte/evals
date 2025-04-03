@@ -4,39 +4,51 @@
 //
 
 export class List {
-  constructor() {
-    throw new Error('Remove this statement and implement this function');
+  constructor(values = []) {
+    this.values = values;
   }
 
-  append() {
-    throw new Error('Remove this statement and implement this function');
+  append(list) {
+    return new List([...this.values, ...list.values]);
   }
 
-  concat() {
-    throw new Error('Remove this statement and implement this function');
+  concat(listOfLists) {
+    const concatenated = this.values.slice();
+    for (const lst of listOfLists.values) {
+      concatenated.push(...lst.values);
+    }
+    return new List(concatenated);
   }
 
-  filter() {
-    throw new Error('Remove this statement and implement this function');
+  filter(fn) {
+    return new List(this.values.filter(fn));
   }
 
-  map() {
-    throw new Error('Remove this statement and implement this function');
+  map(fn) {
+    return new List(this.values.map(fn));
   }
 
   length() {
-    throw new Error('Remove this statement and implement this function');
+    return this.values.length;
   }
 
-  foldl() {
-    throw new Error('Remove this statement and implement this function');
+  foldl(fn, initial) {
+    let acc = initial;
+    for (const el of this.values) {
+      acc = fn(acc, el);
+    }
+    return acc;
   }
 
-  foldr() {
-    throw new Error('Remove this statement and implement this function');
+  foldr(fn, initial) {
+    let acc = initial;
+    for (let i = this.values.length - 1; i >= 0; i--) {
+      acc = fn(acc, this.values[i]);
+    }
+    return acc;
   }
 
   reverse() {
-    throw new Error('Remove this statement and implement this function');
+    return new List([...this.values].reverse());
   }
 }

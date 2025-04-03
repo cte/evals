@@ -4,11 +4,14 @@
 //
 
 export class Binary {
-  constructor() {
-    throw new Error('Remove this statement and implement this function');
+  constructor(value) {
+    this.value = value;
   }
 
   toDecimal() {
-    throw new Error('Remove this statement and implement this function');
+    if (!/^[01]+$/.test(this.value)) {
+      return null;
+    }
+    return parseInt(this.value, 2);
   }
 }
