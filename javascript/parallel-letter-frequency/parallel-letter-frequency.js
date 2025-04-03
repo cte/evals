@@ -4,5 +4,23 @@
 //
 
 export const parallelLetterFrequency = async (texts) => {
-  throw new Error('Remove this statement and implement this function');
+  const countsArray = await Promise.all(
+    texts.map(async (text) => {
+      const counts = {};
+      const letters = text.toLowerCase().match(/\p{L}/gu) || [];
+      for (const letter of letters) {
+        counts[letter] = (counts[letter] || 0) + 1;
+      }
+      return counts;
+    })
+  );
+
+  const finalCounts = {};
+  for (const counts of countsArray) {
+    for (const [letter, count] of Object.entries(counts)) {
+      finalCounts[letter] = (finalCounts[letter] || 0) + count;
+    }
+  }
+
+  return finalCounts;
 };

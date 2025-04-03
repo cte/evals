@@ -8,7 +8,8 @@ class LedgerEntry {
 
 export function createEntry(date, description, change) {
   let entry = new LedgerEntry();
-  entry.date = new Date(date);
+  const [year, month, day] = date.split('-').map(Number);
+  entry.date = new Date(year, month - 1, day);
   entry.description = description;
   entry.change = change;
   return entry;
@@ -138,10 +139,19 @@ export function formatEntries(currency, locale, entries) {
           minimumFractionDigits: 2,
           maximumFractionDigits: 2,
         };
-        changeStr = `${(entry.change / 100).toLocaleString(
-          'nl-NL',
-          formatingOptions,
-        )} `;
+        if (entry.change < 0) {
+          changeStr = `${(-entry.change / 100).toLocaleString(
+            'nl-NL',
+            formatingOptions,
+          )}`;
+          // Insert minus after currency symbol and space
+          changeStr = changeStr.replace(/^(\D+\s?)/, '$1-');
+        } else {
+          changeStr = `${(entry.change / 100).toLocaleString(
+            'nl-NL',
+            formatingOptions,
+          )}`;
+        }
       } else if (currency === 'EUR') {
         let formatingOptions = {
           style: 'currency',
@@ -150,12 +160,25 @@ export function formatEntries(currency, locale, entries) {
           minimumFractionDigits: 2,
           maximumFractionDigits: 2,
         };
-        changeStr = `${(entry.change / 100).toLocaleString(
-          'nl-NL',
-          formatingOptions,
-        )} `;
+        if (entry.change < 0) {
+          changeStr = `${(-entry.change / 100).toLocaleString(
+            'nl-NL',
+            formatingOptions,
+          )}`;
+          // Insert minus after currency symbol and space
+          changeStr = changeStr.replace(/^(\D+\s?)/, '$1-');
+        } else {
+          changeStr = `${(entry.change / 100).toLocaleString(
+            'nl-NL',
+            formatingOptions,
+          )}`;
+        }
       }
-      table += changeStr.padStart(13, ' ');
+      if (entry.change < 0) {
+        table += ('   ' + changeStr.trimEnd()).padEnd(13, ' ');
+      } else {
+        table += ('  ' + changeStr.trimEnd()).padEnd(13, ' ');
+      }
       table += '\n';
     });
   }

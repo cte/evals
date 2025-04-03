@@ -13,6 +13,8 @@ type Dir int
 
 var _ fmt.Stringer = Dir(1729)
 
+type Action struct{}
+type Action3 struct{}
 // additional definitions used in step 2
 
 type Command byte // valid values are 'R', 'L', 'A'
