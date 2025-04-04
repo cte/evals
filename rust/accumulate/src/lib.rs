@@ -1,4 +1,10 @@
-/// What should the type of _function be?
-pub fn map(input: Vec<i32>, _function: ???) -> Vec<i32> {
-    todo!("Transform input vector {input:?} using passed function");
+pub fn map<T, U, F>(input: Vec<T>, mut f: F) -> Vec<U>
+where
+    F: FnMut(T) -> U,
+{
+    let mut output = Vec::with_capacity(input.len());
+    for element in input {
+        output.push(f(element));
+    }
+    output
 }

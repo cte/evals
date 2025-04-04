@@ -4,11 +4,29 @@
 //
 
 export class Binary {
-  constructor() {
-    throw new Error('Remove this statement and implement this function');
+  constructor(binaryString) {
+    this.binaryString = binaryString;
   }
 
   toDecimal() {
-    throw new Error('Remove this statement and implement this function');
+    // Validate input: Check for any characters other than '0' or '1'
+    // Validate input: Check for any characters other than '0' or '1'
+    if (/[^01]/.test(this.binaryString)) {
+      // The test expects null for invalid input, not an error
+      return null;
+    }
+
+    let decimalValue = 0;
+    const len = this.binaryString.length;
+
+    for (let i = 0; i < len; i++) {
+      // Read the string from left to right
+      const digit = parseInt(this.binaryString[i], 10);
+      // Calculate the power based on position from the right end
+      const power = len - 1 - i;
+      decimalValue += digit * (2 ** power);
+    }
+
+    return decimalValue;
   }
 }

@@ -1,29 +1,77 @@
+import java.lang.reflect.Array;
+import java.util.NoSuchElementException;
+
 class SimpleLinkedList<T> {
+
+    private static class Node<T> {
+        T data;
+        Node<T> next;
+
+        Node(T data) {
+            this.data = data;
+            this.next = null;
+        }
+    }
+
+    private Node<T> head;
+    private int size;
+
     SimpleLinkedList() {
-        throw new UnsupportedOperationException("Please implement the SimpleLinkedList() constructor.");
+        this.head = null;
+        this.size = 0;
     }
 
     SimpleLinkedList(T[] values) {
-        throw new UnsupportedOperationException("Please implement the SimpleLinkedList(T[]) constructor.");
+        this(); // Initialize head and size
+        for (int i = values.length - 1; i >= 0; i--) {
+            push(values[i]);
+        }
     }
 
     void push(T value) {
-        throw new UnsupportedOperationException("Please implement the SimpleLinkedList.push() method.");
+        Node<T> newNode = new Node<>(value);
+        newNode.next = head;
+        head = newNode;
+        size++;
     }
 
     T pop() {
-        throw new UnsupportedOperationException("Please implement the SimpleLinkedList.pop() method.");
+        if (head == null) {
+            throw new NoSuchElementException();
+        }
+        T value = head.data;
+        head = head.next;
+        size--;
+        return value;
     }
 
     void reverse() {
-        throw new UnsupportedOperationException("Please implement the SimpleLinkedList.reverse() method.");
+        Node<T> prev = null;
+        Node<T> current = head;
+        Node<T> next = null;
+        while (current != null) {
+            next = current.next;
+            current.next = prev;
+            prev = current;
+            current = next;
+        }
+        head = prev;
     }
 
     T[] asArray(Class<T> clazz) {
-        throw new UnsupportedOperationException("Please implement the SimpleLinkedList.asArray() method.");
+        @SuppressWarnings("unchecked")
+        T[] array = (T[]) Array.newInstance(clazz, size);
+        Node<T> current = head;
+        int i = 0;
+        while (current != null) {
+            array[i++] = current.data;
+            current = current.next;
+        }
+        // The array should represent the list order, head first.
+        return array;
     }
 
     int size() {
-        throw new UnsupportedOperationException("Please implement the SimpleLinkedList.size() method.");
+        return size;
     }
 }

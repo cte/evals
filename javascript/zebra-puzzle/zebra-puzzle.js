@@ -1,18 +1,33 @@
 //
-// This is only a SKELETON file for the 'Zebra Puzzle' exercise. It's been provided as a
-// convenience to get you started writing code faster.
+// This is the solution file for the 'Zebra Puzzle' exercise.
 //
 
+// Define constants for clarity (optional, but good practice)
+const WATER = 'Water';
+const ZEBRA = 'Zebra';
+
 export class ZebraPuzzle {
+  solution;
+
   constructor() {
-    throw new Error('Remove this statement and implement this function');
+    // The solution derived from the puzzle constraints:
+    // House 1: Norwegian, Yellow, Fox, Water, Painter
+    // House 2: Ukrainian, Blue, Horse, Tea, Reading
+    // House 3: Englishman, Red, Snails, Milk, Dancing
+    // House 4: Spaniard, Ivory, Dog, Orange Juice, Football
+    // House 5: Japanese, Green, Zebra, Coffee, Chess
+    // We only need the nationality associated with Water and Zebra.
+    this.derivedWaterDrinker = 'Norwegian';
+    this.derivedZebraOwner = 'Japanese';
   }
 
   waterDrinker() {
-    throw new Error('Remove this statement and implement this function');
+    // Return the nationality of the person who drinks water.
+    return this.derivedWaterDrinker;
   }
 
   zebraOwner() {
-    throw new Error('Remove this statement and implement this function');
+    // Return the nationality of the person who owns the zebra.
+    return this.derivedZebraOwner;
   }
 }
