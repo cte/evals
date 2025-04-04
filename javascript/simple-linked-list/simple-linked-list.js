@@ -1,44 +1,64 @@
-//
-// This is only a SKELETON file for the 'Simple Linked List' exercise. It's been provided as a
-// convenience to get you started writing code faster.
-//
-
 export class Element {
-  constructor() {
-    throw new Error('Remove this statement and implement this function');
+  constructor(value) {
+    this._value = value;
+    this._next = null;
   }
 
   get value() {
-    throw new Error('Remove this statement and implement this function');
+    return this._value;
   }
 
   get next() {
-    throw new Error('Remove this statement and implement this function');
+    return this._next;
+  }
+
+  // Internal method to set the next element, used by List
+  _setNext(element) {
+    this._next = element;
   }
 }
 
 export class List {
-  constructor() {
-    throw new Error('Remove this statement and implement this function');
+  constructor(values = []) {
+    this._head = null;
+    this._length = 0;
+
+    // Initialize list from array values
+    values.forEach(value => this.add(new Element(value)));
   }
 
-  add(nextValue) {
-    throw new Error('Remove this statement and implement this function');
+  add(nextElement) {
+    // Add to the head of the list
+    nextElement._setNext(this._head);
+    this._head = nextElement;
+    this._length++;
   }
 
   get length() {
-    throw new Error('Remove this statement and implement this function');
+    return this._length;
   }
 
   get head() {
-    throw new Error('Remove this statement and implement this function');
+    return this._head;
   }
 
   toArray() {
-    throw new Error('Remove this statement and implement this function');
+    const result = [];
+    let current = this._head;
+    while (current) {
+      result.push(current.value);
+      current = current.next;
+    }
+    return result;
   }
 
   reverse() {
-    throw new Error('Remove this statement and implement this function');
+    const reversedList = new List();
+    let current = this._head;
+    while (current) {
+      reversedList.add(new Element(current.value)); // Add creates the reversed order
+      current = current.next;
+    }
+    return reversedList;
   }
 }

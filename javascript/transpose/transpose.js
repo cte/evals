@@ -1,8 +1,31 @@
-//
-// This is only a SKELETON file for the 'Transpose' exercise. It's been provided as a
-// convenience to get you started writing code faster.
-//
+export const transpose = (input) => {
+  if (!input || input.length === 0) {
+    return [];
+  }
 
-export const transpose = () => {
-  throw new Error('Remove this statement and implement this function');
+  let maxLength = 0;
+  for (const row of input) {
+    if (row.length > maxLength) {
+      maxLength = row.length;
+    }
+  }
+
+  const output = [];
+  for (let i = 0; i < maxLength; i++) {
+    let newRow = '';
+    let padding = '';
+    for (let j = 0; j < input.length; j++) {
+      const char = input[j][i];
+      if (char !== undefined) {
+        newRow += padding; // Add padding accumulated from previous shorter rows
+        padding = '';      // Reset padding
+        newRow += char;    // Add the actual character
+      } else {
+        padding += ' ';    // Increment padding if current row is too short
+      }
+    }
+    output.push(newRow);
+  }
+
+  return output;
 };
