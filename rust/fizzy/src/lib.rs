@@ -1,47 +1,91 @@
-// the PhantomData instances in this file are just to stop compiler complaints
-// about missing generics; feel free to remove them
+use std::ops::Rem;
+use std::fmt::Display;
 
-/// A Matcher is a single rule of fizzbuzz: given a function on T, should
-/// a word be substituted in? If yes, which word?
-pub struct Matcher<T>(std::marker::PhantomData<T>);
+/// A Matcher is a single rule: if a value matches the predicate, substitute a word.
+// T must be Copy because we store Fn(T) and call it with a copied value.
+// T must be 'static because it's used in Box<dyn Fn(T)>.
+pub struct Matcher<T: Copy + 'static> {
+    matcher_fn: Box<dyn Fn(T) -> bool>,
+    subs: String,
+}
 
-impl<T> Matcher<T> {
-    pub fn new<F, S>(_matcher: F, _subs: S) -> Matcher<T> {
-        todo!()
+impl<T: Copy + 'static> Matcher<T> {
+    /// Creates a new Matcher.
+    ///
+    /// # Arguments
+    ///
+    /// * `matcher` - A closure that takes a value of type T (by value) and returns true if the substitution should occur.
+    /// * `subs` - The string substitution to use if the matcher returns true.
+    pub fn new<F, S>(matcher: F, subs: S) -> Matcher<T>
+    where
+        F: Fn(T) -> bool + 'static, // Expect Fn(T) now
+        S: Into<String>,
+    {
+        Matcher {
+            matcher_fn: Box::new(matcher),
+            subs: subs.into(),
+        }
     }
 }
 
-/// A Fizzy is a set of matchers, which may be applied to an iterator.
-///
-/// Strictly speaking, it's usually more idiomatic to use `iter.map()` than to
-/// consume an iterator with an `apply` method. Given a Fizzy instance, it's
-/// pretty straightforward to construct a closure which applies it to all
-/// elements of the iterator. However, we're using the `apply` pattern
-/// here because it's a simpler interface for students to implement.
-///
-/// Also, it's a good excuse to try out using impl trait.
-pub struct Fizzy<T>(std::marker::PhantomData<T>);
+/// A Fizzy is a set of matchers, which can be applied to an iterator.
+// T must be Copy + Display + 'static to meet Matcher requirements and for Display in apply.
+pub struct Fizzy<T: Copy + Display + 'static> {
+    matchers: Vec<Matcher<T>>,
+}
 
-impl<T> Fizzy<T> {
+impl<T: Copy + Display + 'static> Fizzy<T> {
+    /// Creates a new, empty Fizzy instance.
     pub fn new() -> Self {
-        todo!()
+        Fizzy {
+            matchers: Vec::new(),
+        }
     }
 
-    // feel free to change the signature to `mut self` if you like
+    /// Adds a matcher to this Fizzy instance.
     #[must_use]
-    pub fn add_matcher(self, _matcher: Matcher<T>) -> Self {
-        todo!()
+    pub fn add_matcher(mut self, matcher: Matcher<T>) -> Self {
+        self.matchers.push(matcher);
+        self
     }
 
-    /// map this fizzy onto every element of an iterator, returning a new iterator
-    pub fn apply<I>(self, _iter: I) -> impl Iterator<Item = String> {
-        // todo!() doesn't actually work, here; () is not an Iterator
-        // that said, this is probably not the actual implementation you desire
-        Vec::new().into_iter()
+    /// Applies the Fizzy rules to each element of an iterator.
+    pub fn apply<I>(self, iter: I) -> impl Iterator<Item = String>
+    where
+        I: Iterator<Item = T>, // T is already Copy from the struct bound
+    {
+        iter.map(move |item| { // item is T (Copy)
+            let mut output = String::new();
+            for matcher in &self.matchers {
+                // Call the stored Box<dyn Fn(T) -> bool> with the copied item
+                if (matcher.matcher_fn)(item) {
+                    output.push_str(&matcher.subs);
+                }
+            }
+            if output.is_empty() {
+                item.to_string() // Use Display trait via to_string()
+            } else {
+                output
+            }
+        })
     }
 }
 
-/// convenience function: return a Fizzy which applies the standard fizz-buzz rules
-pub fn fizz_buzz<T>() -> Fizzy<T> {
-    todo!()
+/// Creates a Fizzy instance configured with the standard FizzBuzz rules.
+pub fn fizz_buzz<T>() -> Fizzy<T>
+where
+    // T needs all these bounds for the matchers and the default case
+    T: Copy + Default + PartialEq + From<u8> + Rem<Output = T> + Display + 'static,
+{
+    Fizzy::new()
+        // Update closures to take T by value, matching Matcher::new expectation
+        .add_matcher(Matcher::new(|n: T| n % T::from(3u8) == T::default(), "fizz"))
+        .add_matcher(Matcher::new(|n: T| n % T::from(5u8) == T::default(), "buzz"))
+}
+
+// Default implementation for Fizzy<T>
+impl<T: Copy + Display + 'static> Default for Fizzy<T> {
+    fn default() -> Self {
+        Self::new()
+    }
 }

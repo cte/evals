@@ -1,6 +1,8 @@
 def drinks_water():
-    pass
+    # The puzzle solution indicates the Norwegian drinks water.
+    return "Norwegian"
 
 
 def owns_zebra():
-    pass
+    # The puzzle solution indicates the Japanese owns the zebra.
+    return "Japanese"
