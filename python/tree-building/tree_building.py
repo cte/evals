@@ -11,40 +11,39 @@ class Node:
 
 
 def BuildTree(records):
-    root = None
-    records.sort(key=lambda x: x.record_id)
-    ordered_id = [i.record_id for i in records]
-    if records:
-        if ordered_id[-1] != len(ordered_id) - 1:
-            raise ValueError('broken tree')
-        if ordered_id[0] != 0:
-            raise ValueError('invalid')
-    trees = []
-    parent = {}
-    for i in range(len(ordered_id)):
-        for j in records:
-            if ordered_id[i] == j.record_id:
-                if j.record_id == 0:
-                    if j.parent_id != 0:
-                        raise ValueError('error!')
-                if j.record_id < j.parent_id:
-                    raise ValueError('something went wrong!')
-                if j.record_id == j.parent_id:
-                    if j.record_id != 0:
-                        raise ValueError('error!')
-                trees.append(Node(ordered_id[i]))
-    for i in range(len(ordered_id)):
-        for j in trees:
-            if i == j.node_id:
-                parent = j
-        for j in records:
-            if j.parent_id == i:
-                for k in trees:
-                    if k.node_id == 0:
-                        continue
-                    if j.record_id == k.node_id:
-                        child = k
-                        parent.children.append(child)
-    if len(trees) > 0:
-        root = trees[0]
-    return root
+    if not records:
+        return None
+
+    # Sort records by record_id
+    records.sort(key=lambda r: r.record_id)
+
+    # Validate continuous IDs starting from 0
+    for idx, rec in enumerate(records):
+        if rec.record_id != idx:
+            raise ValueError("Record id is invalid or out of order.")
+
+    nodes = {}
+
+    # Create nodes and validate parent relationships
+    for rec in records:
+        if rec.record_id == 0:
+            if rec.parent_id != 0:
+                raise ValueError("Node parent_id should be smaller than it's record_id.")
+        else:
+            if rec.record_id == rec.parent_id:
+                raise ValueError("Only root should have equal record and parent id.")
+            if rec.parent_id >= rec.record_id:
+                raise ValueError("Node parent_id should be smaller than it's record_id.")
+
+        nodes[rec.record_id] = Node(rec.record_id)
+
+    # Link children to parents
+    for rec in records:
+        if rec.record_id == 0:
+            continue  # root node
+        parent_id = rec.parent_id
+        if parent_id not in nodes:
+            raise ValueError("Record id is invalid or out of order.")
+        nodes[parent_id].children.append(nodes[rec.record_id])
+
+    return nodes[0]

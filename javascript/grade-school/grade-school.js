@@ -1,18 +1,40 @@
-//
-// This is only a SKELETON file for the 'Grade School' exercise. It's been provided as a
-// convenience to get you started writing code faster.
-//
-
 export class GradeSchool {
+  constructor() {
+    this._db = {};
+  }
+
   roster() {
-    throw new Error('Remove this statement and implement this function');
+    // Return a deep copy with sorted arrays to prevent external mutation
+    const copy = {};
+    for (const grade in this._db) {
+      copy[grade] = [...this._db[grade]].sort();
+    }
+    return copy;
   }
 
-  add() {
-    throw new Error('Remove this statement and implement this function');
+  add(name, grade) {
+    // Remove student from any existing grade
+    for (const g in this._db) {
+      this._db[g] = this._db[g].filter(student => student !== name);
+      // Clean up empty grades
+      if (this._db[g].length === 0) {
+        delete this._db[g];
+      }
+    }
+
+    // Add student to the new grade
+    if (!this._db[grade]) {
+      this._db[grade] = [];
+    }
+    this._db[grade].push(name);
+    this._db[grade].sort();
   }
 
-  grade() {
-    throw new Error('Remove this statement and implement this function');
+  grade(gradeNumber) {
+    if (!this._db[gradeNumber]) {
+      return [];
+    }
+    // Return a sorted copy to prevent external mutation
+    return [...this._db[gradeNumber]].sort();
   }
 }

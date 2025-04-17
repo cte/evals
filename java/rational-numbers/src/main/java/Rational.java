@@ -2,44 +2,91 @@ import java.util.Objects;
 
 class Rational {
 
-    Rational(int numerator, int denominator) {
-        throw new UnsupportedOperationException("Delete this statement and write your own implementation.");
+    private final int numerator;
+    private final int denominator;
+
+    public Rational(int numerator, int denominator) {
+        if (denominator == 0) {
+            throw new ArithmeticException("Denominator cannot be zero");
+        }
+
+        // Normalize sign: denominator always positive
+        if (denominator < 0) {
+            numerator = -numerator;
+            denominator = -denominator;
+        }
+
+        int gcd = gcd(Math.abs(numerator), denominator);
+        this.numerator = numerator / gcd;
+        this.denominator = denominator / gcd;
+    }
+
+    private int gcd(int a, int b) {
+        while (b != 0) {
+            int t = b;
+            b = a % b;
+            a = t;
+        }
+        return a;
     }
 
     int getNumerator() {
-        throw new UnsupportedOperationException("Delete this statement and write your own implementation.");
+        return numerator;
     }
 
     int getDenominator() {
-        throw new UnsupportedOperationException("Delete this statement and write your own implementation.");
+        return denominator;
     }
 
     Rational add(Rational other) {
-        throw new UnsupportedOperationException("Delete this statement and write your own implementation.");
+        int num = this.numerator * other.denominator + other.numerator * this.denominator;
+        int den = this.denominator * other.denominator;
+        return new Rational(num, den);
     }
 
     Rational subtract(Rational other) {
-        throw new UnsupportedOperationException("Delete this statement and write your own implementation.");
+        int num = this.numerator * other.denominator - other.numerator * this.denominator;
+        int den = this.denominator * other.denominator;
+        return new Rational(num, den);
     }
 
     Rational multiply(Rational other) {
-        throw new UnsupportedOperationException("Delete this statement and write your own implementation.");
+        int num = this.numerator * other.numerator;
+        int den = this.denominator * other.denominator;
+        return new Rational(num, den);
     }
 
     Rational divide(Rational other) {
-        throw new UnsupportedOperationException("Delete this statement and write your own implementation.");
+        if (other.numerator == 0) {
+            throw new ArithmeticException("Division by zero");
+        }
+        int num = this.numerator * other.denominator;
+        int den = this.denominator * other.numerator;
+        return new Rational(num, den);
     }
 
     Rational abs() {
-        throw new UnsupportedOperationException("Delete this statement and write your own implementation.");
+        return new Rational(Math.abs(numerator), denominator);
     }
 
     Rational pow(int power) {
-        throw new UnsupportedOperationException("Delete this statement and write your own implementation.");
+        if (power == 0) {
+            return new Rational(1,1);
+        } else if (power > 0) {
+            return new Rational(
+                (int) Math.pow(this.numerator, power),
+                (int) Math.pow(this.denominator, power)
+            );
+        } else { // negative power
+            return new Rational(
+                (int) Math.pow(this.denominator, -power),
+                (int) Math.pow(this.numerator, -power)
+            );
+        }
     }
 
-    double exp(double exponent) {
-        throw new UnsupportedOperationException("Delete this statement and write your own implementation.");
+    double exp(double base) {
+        return Math.pow(base, (double) this.numerator / this.denominator);
     }
 
     @Override
@@ -53,7 +100,6 @@ class Rational {
             return this.getNumerator() == other.getNumerator()
                     && this.getDenominator() == other.getDenominator();
         }
-
         return false;
     }
 

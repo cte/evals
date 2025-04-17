@@ -41,9 +41,68 @@ const VALID_OPTIONS = [
 
 const ARGS = process.argv;
 
-//
-// This is only a SKELETON file for the 'Grep' exercise. It's been provided as a
-// convenience to get you started writing code faster.
-//
-// This file should *not* export a function. Use ARGS to determine what to grep
-// and use console.log(output) to write to the standard output.
+const args = ARGS.slice(2);
+
+// Extract flags (starting with -)
+const flags = [];
+while (args[0] && args[0].startsWith('-')) {
+  const flagChars = args.shift().slice(1);
+  for (const char of flagChars) {
+    if (VALID_OPTIONS.includes(char)) {
+      flags.push(char);
+    }
+  }
+}
+
+const pattern = args.shift();
+const files = args;
+
+// Prepare regex flags
+const regexFlags = flags.includes('i') ? 'i' : '';
+const fullLineMatch = flags.includes('x');
+const invertMatch = flags.includes('v');
+const listFilenames = flags.includes('l');
+const addLineNumbers = flags.includes('n');
+
+const matchedFiles = [];
+const outputLines = [];
+
+for (const file of files) {
+  const lines = readLines(file);
+  let fileMatched = false;
+
+  for (let idx = 0; idx < lines.length; idx++) {
+    const line = lines[idx];
+    let match = false;
+
+    if (fullLineMatch) {
+      const regex = new RegExp(`^${pattern}$`, regexFlags);
+      match = regex.test(line);
+    } else {
+      const regex = new RegExp(pattern, regexFlags);
+      match = regex.test(line);
+    }
+
+    if (invertMatch) {
+      match = !match;
+    }
+
+    if (match) {
+      fileMatched = true;
+      if (!listFilenames) {
+        const prefix = addLineNumbers ? `${idx + 1}:` : '';
+        outputLines.push(`${files.length > 1 ? file + ':' : ''}${prefix}${line}`);
+      }
+    }
+  }
+
+  if (fileMatched && listFilenames) {
+    matchedFiles.push(file);
+  }
+}
+
+if (listFilenames) {
+  console.log(matchedFiles.join('\n'));
+} else {
+  console.log(outputLines.join('\n'));
+}
